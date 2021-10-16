@@ -35,13 +35,14 @@ fake_users_db = {
         "full_name": "Ahmad Ilyas",
         "email": "ahmad@gmail.com",
         "hashed_password": "$2b$12$8LX.JABgfq/RqDeArsHoyemFiyGFNfpUFHswcY9aoQjzEz.MHMS2m",
-        "disabled": False,
+        "disabled": True,
     },
 }
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+
 
 class TokenData(BaseModel):
     username: Optional[str] = None
@@ -70,6 +71,9 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+def fake_hash_password(password: str):
+    return "fakehashed" + password
+
 def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
@@ -92,6 +96,23 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def fake_decode_token(token):
+	user = get_user(fake_users_db, token)
+	return user
+    # return User(
+    #     username=token + "fakedecoded", email="wpo9nine@gmail.com", full_name="Ilyas Irfan"
+    # )
+
+# async def get_current_user(token: str = Depends(oauth2_scheme)):
+#     user = fake_decode_token(token)
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid authentication credentials",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     return user
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
@@ -120,6 +141,18 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 		)
     return current_user
 
+# @app.post("/token")
+# async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+#     user_dict = fake_users_db.get(form_data.username)
+#     if not user_dict:
+#         raise HTTPException(status_code=400, detail="Incorrect username or password")
+#     user = UserInDB(**user_dict)
+#     hashed_password = fake_hash_password(form_data.password)
+#     if not hashed_password == user.hashed_password:
+#         raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+#     return {"access_token": user.username, "token_type": "bearer"}
+
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -139,16 +172,21 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
+@app.get("/users/me/items/")
+async def read_own_items(current_user: User = Depends(get_current_active_user)):
+    return [{"item_id": "Foo", "owner": current_user.username}]
+
 @app.get("/")
-def root(current_user: User = Depends(get_current_active_user)):
+def root():
 	return{'Menu','Item'}
 
 @app.get("/menu")
-async def read_menus(current_user: User = Depends(get_current_active_user)):
-	return data
+async def read_menus(token: str = Depends(oauth2_scheme)):
+	return {"token" : token}
+	# return data
 
 @app.get("/menu/{item_id}")
-async def read_menu(item_id : int, current_user: User = Depends(get_current_active_user)):
+async def read_menu(item_id : int):
 	for menu_item in data['menu']:
 		if menu_item['id'] == item_id:
 			return menu_item
@@ -158,27 +196,31 @@ async def read_menu(item_id : int, current_user: User = Depends(get_current_acti
 		)
 
 @app.post('/menu')
-async def add_menu(name : str, current_user: User = Depends(get_current_active_user)):
+async def add_menu(name : str):
 	id = 1
-	if(len(data['menu']) > 0):
-		id = data['menu'][len(data['menu']) - 1]['id']+1
+	if(len(data['menu']) > 0): #buat base id
+		id = data['menu'][len(data['menu']) - 1]['id']+1 #cari record terakhir dan akses id
 	n_data = {'id': id,'name' : name}
 	data['menu'].append(dict(n_data))
 	read_file.close()
 	with open("menu.json","w") as write_file:
-		json.dump(data,write_file,indent = 4)
+		json.dump(data,write_file,indent = 4) #agar rapi indent = 4
 	write.file.close()
 		
 	return n_data
+	# raise HTTPException(
+	# 		status_code = 500,
+	# 		detail = f'Internal server error'
+	# 	)
 
 @app.put("/menu/{item_id}")
-async def update_menu(item_id : int, name : str, current_user: User = Depends(get_current_active_user)):
+async def update_menu(item_id : int, name : str):
 	for menu_item in data['menu']:
 		if menu_item['id'] == item_id:
 			menu_item['name'] = name
 			read_file.close()
 			with open("menu.json","w") as write_file:
-				json.dump(data,write_file,indent = 4)
+				json.dump(data,write_file,indent = 4) #agar rapi indent = 4
 			write.file.close()
 
 			return("message : data updated successfully!!")
@@ -190,13 +232,13 @@ async def update_menu(item_id : int, name : str, current_user: User = Depends(ge
 
 
 @app.delete("/menu/{item_id}")
-async def delete_menu(item_id : int, current_user: User = Depends(get_current_active_user)):
+async def delete_menu(item_id : int):
 	for menu_item in data['menu']:
 		if menu_item['id'] == item_id:
 			data['menu'].remove(menu_item)
 			read_file.close()
 			with open("menu.json","w") as write_file:
-				json.dump(data,write_file,indent = 4) 
+				json.dump(data,write_file,indent = 4) #agar rapi indent = 4
 			write.file.close()
 
 			return("message : data deleted successfully!!")
