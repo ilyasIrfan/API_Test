@@ -79,5 +79,5 @@ async def delete_menu(item_id : int):
 			detail = f'Item not found'
 		)
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="127.0.0.1", port=8080)
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8080)
