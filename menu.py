@@ -1,20 +1,25 @@
 import uvicorn
 import json
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 
 with open("menu.json","r") as read_file:
 	data = json.load(read_file)
+
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @app.get("/")
 def root():
 	return{'Menu','Item'}
 
 @app.get("/menu")
-async def read_menus():
-	return data
+async def read_menus(token: str = Depends(oauth2_scheme)):
+	return {"token" : token}
+	# return data
 
 @app.get("/menu/{item_id}")
 async def read_menu(item_id : int):
