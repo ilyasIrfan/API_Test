@@ -49,11 +49,12 @@ def get_user(db, username: str):
         return UserInDB(**user_dict)
 
 def fake_decode_token(token):
+	user = get_user(fake_users_db, token)
+	return user
     # return User(
     #     username=token + "fakedecoded", email="wpo9nine@gmail.com", full_name="Ilyas Irfan"
     # )
-	user = get_user(fake_users_db, token)
-    return user
+
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -64,7 +65,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Invalid authentication credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-	return user
+    return user
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)):
     if current_user.disabled:
