@@ -15,7 +15,7 @@ fake_users_db = {
         "hashed_password": "fakehashedsecret",
         "disabled": False,
     },
-    "alice": {
+    "Irfan": {
         "username": "Irfan",
         "full_name": "Irfan Syiraaj",
         "email": "irfan@gmail.com",
