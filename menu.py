@@ -51,7 +51,7 @@ class UserInDB(User):
 with open("menu.json","r") as read_file:
 	data = json.load(read_file)
 
-pwd_context = CryptContext(schemes=["bycrypt"], deprecated = "auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
