@@ -4,6 +4,8 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+from pydantic import BaseModel
 
 with open("menu.json","r") as read_file:
 	data = json.load(read_file)
@@ -11,6 +13,27 @@ with open("menu.json","r") as read_file:
 app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+class User(BaseModel):
+    username: str
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    disabled: Optional[bool] = None
+
+def fake_decode_token(token):
+    return User(
+        username=token + "fakedecoded", email="wpo9nine@gmail.com", full_name="Ilyas Irfan"
+    )
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    user = fake_decode_token(token)
+    return user
+
+
+@app.get("/users/me")
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
 
 @app.get("/")
 def root():
