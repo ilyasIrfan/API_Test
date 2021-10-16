@@ -1,0 +1,1 @@
+running hanya tinggal eksekusi file pythonnya saja
