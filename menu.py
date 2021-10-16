@@ -1,3 +1,4 @@
+from os import write
 import uvicorn
 import json
 from fastapi import FastAPI, HTTPException, Depends, status
@@ -19,14 +20,21 @@ fake_users_db = {
         "username": "Ilyas",
         "full_name": "Ilyas Irfan",
         "email": "ilyas@gmail.com",
-        "hashed_password": "fakehashedsecret",
+        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
         "disabled": False,
     },
     "Irfan": {
         "username": "Irfan",
         "full_name": "Irfan Syiraaj",
         "email": "irfan@gmail.com",
-        "hashed_password": "fakehashedsecret2",
+        "hashed_password": "$2b$12$uSVPq0o43flxPyzcbW4q3.y9ChpOmWHYxsQJ276UiUQC5pHHItjRK",
+        "disabled": True,
+    },
+    "Ahmad": {
+        "username": "Ahmad",
+        "full_name": "Ahmad Ilyas",
+        "email": "ahmad@gmail.com",
+        "hashed_password": "$2b$12$8LX.JABgfq/RqDeArsHoyemFiyGFNfpUFHswcY9aoQjzEz.MHMS2m",
         "disabled": True,
     },
 }
