@@ -8,6 +8,6 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-pwd = get_password_hash("secret3")
+pwd = get_password_hash("asdf")
 print(pwd)
-print(verify_password("secret3", pwd))
+print(verify_password("asdf", pwd))

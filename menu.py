@@ -16,6 +16,13 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 fake_users_db = {
+    "asdf": {
+        "username": "asdf",
+        "full_name": "asdf fdsa",
+        "email": "asdf@gmail.com",
+        "hashed_password": "$2b$12$Ka0vMpyiiM/W.uIJAb.W9OJrqBrUddCjipFRFyyi5Hj68fWnr6Cvq",
+        "disabled": False,
+    },
     "Ilyas": {
         "username": "Ilyas",
         "full_name": "Ilyas Irfan",
