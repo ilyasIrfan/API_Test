@@ -8,6 +8,5 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-pwd = get_password_hash("asdf")
-print(pwd)
-print(verify_password("asdf", pwd))
+password = input("input password : ")
+print("hash : " + get_password_hash(password))
