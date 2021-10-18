@@ -1,1 +1,1 @@
-web: uvicorn main:app --host=127.0.0.1 --port=${PORT:-8000}
+web: python main.py runserver 0.0.0.0:5000
